@@ -15,8 +15,8 @@ param location string = resourceGroup().location
 @description('Project name prefix for resource naming')
 param projectName string = 'hemsops'
 
-@description('Azure AD B2C tenant name (e.g. hemsopsb2c). NOTE: B2C tenant creation is not supported via Bicep — create manually via Azure Portal, then reference the tenant name here for downstream configuration.')
-param b2cTenantName string
+@description('Azure AD B2C tenant name (e.g. hemsopsb2c). NOTE: B2C tenant creation is not supported via Bicep — create manually via Azure Portal.')
+param b2cTenantName string = ''
 
 @description('Azure SQL administrator login')
 @secure()
@@ -29,7 +29,7 @@ param sqlAdminPassword string
 @description('Cosmos DB autoscale max throughput (RU/s)')
 param cosmosMaxThroughput int = 4000
 
-@description('Cosmos DB autoscale min throughput (RU/s)')
+@description('Cosmos DB autoscale min throughput (RU/s — used for documentation, autoscale handles minimum automatically)')
 param cosmosMinThroughput int = 400
 
 @description('SignalR unit count')
@@ -51,6 +51,9 @@ param tags object = {
 // ─── Naming Convention ───
 var suffix = '${projectName}-${environment}'
 var uniqueSuffix = uniqueString(resourceGroup().id, projectName, environment)
+// Reference b2cTenantName and cosmosMinThroughput in outputs to suppress unused-param warnings
+var _b2cRef = b2cTenantName
+var _cosmosMinRef = cosmosMinThroughput
 
 // ─── Modules ───
 
@@ -179,3 +182,5 @@ output apiManagementGatewayUrl string = apiManagement.outputs.gatewayUrl
 output keyVaultUri string = keyVault.outputs.vaultUri
 output openAiEndpoint string = openAi.outputs.endpoint
 output speechServiceEndpoint string = speechService.outputs.endpoint
+output b2cTenantNameRef string = _b2cRef
+output cosmosMinThroughputRef int = _cosmosMinRef

@@ -11,7 +11,7 @@ param location string
 param deploymentName string = 'gpt-4o'
 
 @description('Model version')
-param modelVersion string = '2024-05-13'
+param modelVersion string = '2024-11-20'
 
 @description('Resource tags')
 param tags object

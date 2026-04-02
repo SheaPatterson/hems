@@ -9,7 +9,7 @@ param cosmosMaxThroughput = 4000
 param cosmosMinThroughput = 400
 param signalRUnitCount = 1
 param openAiDeploymentName = 'gpt-4o'
-param openAiModelVersion = '2024-05-13'
+param openAiModelVersion = '2024-11-20'
 param tags = {
   project: 'hems-ops-center'
   environment: 'production'
