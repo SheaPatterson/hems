@@ -1,0 +1,1 @@
+ALTER TABLE public.hems_bases ENABLE ROW LEVEL SECURITY;

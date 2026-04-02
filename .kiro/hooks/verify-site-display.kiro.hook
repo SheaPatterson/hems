@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Verify Site Display",
+  "description": "After editing React components, pages, or style files, runs the Vite build to ensure the site compiles without errors and displays correctly.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/**/*.tsx",
+      "src/**/*.ts",
+      "src/**/*.css"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm run build",
+    "timeout": 120
+  }
+}

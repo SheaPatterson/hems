@@ -1,0 +1,1 @@
+ALTER TABLE public.helicopters ENABLE ROW LEVEL SECURITY;

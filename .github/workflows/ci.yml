@@ -1,0 +1,63 @@
+name: CI — Lint, Type Check & Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check (Frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+
+  api-build:
+    name: Build & Test (Azure Functions API)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  frontend-build:
+    name: Build (Frontend)
+    runs-on: ubuntu-latest
+    env:
+      VITE_AZURE_B2C_CLIENT_ID: placeholder
+      VITE_AZURE_B2C_AUTHORITY: https://placeholder.b2clogin.com/placeholder.onmicrosoft.com/B2C_1_signupsignin
+      VITE_AZURE_B2C_KNOWN_AUTHORITY: placeholder.b2clogin.com
+      VITE_AZURE_API_SCOPE: https://placeholder.onmicrosoft.com/api/access
+      VITE_AZURE_API_BASE_URL: https://placeholder.azure-api.net
+      VITE_AZURE_SIGNALR_ENDPOINT: https://placeholder.service.signalr.net
+      VITE_AZURE_STORAGE_URL: https://placeholder.blob.core.windows.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx vite build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+          retention-days: 7

@@ -1,0 +1,25 @@
+{
+  "enabled": true,
+  "name": "Sync Docs on Source Change",
+  "description": "When source files (TypeScript, CSS, HTML, config files) are edited, ask the agent to review the change and update relevant documentation in README.md or any docs folder to keep them in sync.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.ts",
+      "*.tsx",
+      "*.css",
+      "*.html",
+      "*.json",
+      "*.js",
+      "*.jsx",
+      "electron/*.ts",
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A source file was just edited. Review the change and determine if any documentation needs to be updated. Check README.md and any docs/ folder for content that references the changed file's functionality, APIs, components, configuration, or usage instructions. If the documentation is now outdated or incomplete due to the source change, update it to reflect the new behavior. If no documentation update is needed, do nothing."
+  }
+}

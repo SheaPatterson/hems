@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+api/node_modules/
+public/downloads/hems-dispatch/node_modules/
+
+# Build output
+dist/
+dist-electron/
+release/
+api/dist/
+public/downloads/hems-dispatch/dist/
+public/downloads/hems-dispatch/build/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.production
+api/local.settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Electron
+release/
+
+# Vite
+*.local
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Test coverage
+coverage/

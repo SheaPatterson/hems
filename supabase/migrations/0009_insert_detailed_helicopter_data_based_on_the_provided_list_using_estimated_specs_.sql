@@ -1,0 +1,25 @@
+INSERT INTO public.helicopters (model, registration, fuel_capacity_lbs, cruise_speed_kts)
+VALUES 
+('Eurocopter EC135 T2+/T3', 'N527ME', 1200, 135),
+('Airbus Helicopters H135', 'N530ME', 1200, 135),
+('Airbus Helicopters H135', 'N536ME', 1200, 135),
+('Eurocopter EC145 C-2', 'N507ME', 1500, 130),
+('Eurocopter EC145 C-2', 'N307ME', 1500, 130),
+('Airbus Helicopters H135', 'N533ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N884ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N855ME', 1200, 135),
+('Eurocopter EC145 C-2', 'N522ME', 1500, 130),
+('Eurocopter EC135 T2+/T3', 'N448ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N639ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N442ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N845ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N446ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N915ME', 1200, 135),
+('Eurocopter EC135 T2+/T3', 'N87ME', 1200, 135),
+('Eurocopter EC145 C-2', 'N932ME', 1500, 130),
+('Eurocopter EC135 T2+/T3', 'N878LF', 1200, 135),
+('Eurocopter EC145 C-2', 'N131LF', 1500, 130),
+('Eurocopter EC145 C-2', 'N474LF', 1500, 130),
+('Eurocopter EC145 C-2', 'N373LF', 1500, 130),
+('Eurocopter EC145 C-2', 'N575LF', 1500, 130)
+ON CONFLICT (registration) DO NOTHING;

@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Azure Backend-Frontend Integration Check",
+  "description": "During the Supabase-to-Azure migration, verifies that edits to integration layers, hooks, types, or Azure Functions maintain consistency between the Azure backend (Functions, SQL, Cosmos DB, SignalR, Blob Storage) and frontend consumers.",
+  "version": "1.0.0",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/integrations/**/*.ts",
+      "src/integrations/**/*.tsx",
+      "src/hooks/*.ts",
+      "src/hooks/*.tsx",
+      "src/types/*.ts",
+      "src/integrations/azure/**/*.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file in the integrations, hooks, or types directory was just edited. The project is migrating from Supabase to Azure. Review the change and verify backend-frontend integration: 1) If this touches the Azure client abstraction (src/integrations/azure/), confirm the AzureClient interface (auth, db, realtime, storage, functions) matches what hooks expect. 2) If this touches a hook, verify it calls azureClient.functions.invoke() with correct endpoint paths matching the Azure Functions API layer (e.g., /api/hospitals, /api/missions, /api/update-telemetry). 3) Check that return types from Azure Functions responses match the TypeScript interfaces in src/types/. 4) If SignalR realtime subscriptions are involved, confirm group names match the convention (mission-radio:{missionId}, global-dispatch, pilot-positions, telemetry:{missionId}). 5) Flag any remaining Supabase references that should have been migrated to Azure equivalents. 6) Verify feature flag usage follows the strangler-fig pattern (supabase | azure | shadow) for hooks still in migration."
+  }
+}

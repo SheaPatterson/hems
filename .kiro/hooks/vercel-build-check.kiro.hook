@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Vercel Build Check",
+  "description": "Runs the production build after source or config file changes to ensure the site remains deployable on Vercel.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.ts",
+      "*.tsx",
+      "*.css",
+      "*.html",
+      "vite.config.*",
+      "package.json",
+      "tsconfig.json"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm run build",
+    "timeout": 120
+  }
+}

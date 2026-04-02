@@ -1,0 +1,1 @@
+ALTER TABLE public.hospitals ENABLE ROW LEVEL SECURITY;

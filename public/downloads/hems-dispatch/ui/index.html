@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEMS TACTICAL COMMAND</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,800;1,800&display=swap');
+        body { font-family: 'JetBrains+Mono', monospace; background: #050505; color: #00ff41; overflow: hidden; height: 100vh; }
+        .crt::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 1000; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        #map { background: #000; filter: invert(100%) hue-rotate(180deg) brightness(0.5) contrast(1.2); }
+        .hud-card { background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.2); }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="crt flex flex-col p-4 space-y-4">
+
+    <!-- Top Status Bar -->
+    <header class="flex justify-between items-center hud-card p-3 rounded-xl shrink-0">
+        <div class="flex items-center space-x-4">
+            <div class="p-2 bg-orange-500/10 rounded-lg border border-orange-500/30">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+            </div>
+            <div>
+                <h1 class="text-sm font-black italic uppercase tracking-tighter">Tactical Bridge v5.2</h1>
+                <p id="mission-id" class="text-[8px] opacity-60">AWAITING_MISSION_UPLINK</p>
+            </div>
+        </div>
+        <div class="flex space-x-4">
+            <div id="sim-status" class="text-[9px] font-black uppercase px-3 py-1 border border-red-500 text-red-500 italic">LINK_OFFLINE</div>
+            <div class="text-[9px] font-black uppercase px-3 py-1 border border-[#00ff41]/30 text-[#00ff41]/50 italic">NODE_ALPHA</div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="flex-grow grid grid-cols-12 gap-4 min-h-0">
+        <!-- Left: Map Display -->
+        <div class="col-span-8 rounded-2xl overflow-hidden border border-[#00ff41]/20 relative">
+            <div id="map" class="h-full w-full"></div>
+            <!-- Map Overlay HUD -->
+            <div class="absolute bottom-4 left-4 z-[500] space-y-2 pointer-events-none">
+                <div class="hud-card backdrop-blur-md p-3 rounded-xl flex space-x-6">
+                    <div>
+                        <p class="text-[8px] opacity-40 uppercase">Altitude</p>
+                        <p class="text-xl font-black italic"><span id="alt">---</span><span class="text-[10px] ml-1">FT</span></p>
+                    </div>
+                    <div>
+                        <p class="text-[8px] opacity-40 uppercase">Ground Speed</p>
+                        <p class="text-xl font-black italic"><span id="spd">---</span><span class="text-[10px] ml-1">KT</span></p>
+                    </div>
+                    <div>
+                        <p class="text-[8px] opacity-40 uppercase">Heading</p>
+                        <p class="text-xl font-black italic"><span id="hdg">---</span>&deg;</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Comms & Logistics -->
+        <div class="col-span-4 flex flex-col space-y-4 min-h-0">
+            <!-- Comms Terminal -->
+            <div class="flex-grow hud-col flex flex-col hud-card rounded-2xl overflow-hidden">
+                <div class="p-2 border-b border-[#00ff41]/10 bg-[#00ff41]/5 text-[9px] font-black uppercase flex justify-between">
+                    <span>Radio Frequency: 123.025</span>
+                    <span class="animate-pulse text-red-500">REC ●</span>
+                </div>
+                <div id="chat-box" class="flex-grow p-4 overflow-y-auto space-y-3 scroll-hide text-[11px]">
+                    <div class="opacity-40 italic">-- System ready. Awaiting radio traffic... --</div>
+                </div>
+                <div class="p-3 border-t border-[#00ff41]/10 flex space-x-2">
+                    <input id="chat-input" type="text" placeholder="MANUAL_RADIO_CMD..." class="bg-black/40 border border-[#00ff41]/20 rounded px-2 py-1 flex-grow focus:outline-none focus:border-[#00ff41] text-[10px]">
+                    <button id="send-btn" class="bg-[#00ff41] text-black px-3 rounded font-black text-[10px] uppercase">Send</button>
+                </div>
+            </div>
+
+            <!-- Fuel & Logistics -->
+            <div class="h-32 hud-card rounded-2xl p-4 flex flex-col justify-center">
+                <p class="text-[10px] opacity-40 uppercase mb-1">Fuel State</p>
+                <div class="flex items-baseline space-x-2">
+                    <span id="fuel" class="text-4xl font-black italic">---</span>
+                    <span class="text-xs font-bold opacity-40">LBS</span>
+                </div>
+                <div class="w-full h-1 bg-[#00ff41]/10 rounded-full mt-3 overflow-hidden">
+                    <div id="fuel-bar" class="h-full bg-[#00ff41] w-full transition-all duration-1000"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="hud-card p-2 rounded-xl flex justify-between items-center text-[8px] opacity-40 shrink-0">
+        <span>COORDS: <span id="lat">0.0000</span>, <span id="lon">0.0000</span></span>
+        <span>ENCRYPTION: AES-256-GCM</span>
+        <span>LATENCY: <span id="ping">0</span>ms</span>
+    </footer>
+
+    <script>
+        let map = L.map('map', { zoomControl: false, attributionControl: false }).setView([40.44, -79.99], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        let marker = L.circleMarker([0, 0], { radius: 6, color: '#00ff41', weight: 2, fillOpacity: 0.8 }).addTo(map);
+        let path = L.polyline([], { color: '#00ff41', weight: 1, opacity: 0.3, dashArray: '5, 10' }).addTo(map);
+
+        async function poll() {
+            const start = Date.now();
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                document.getElementById('ping').innerText = Date.now() - start;
+
+                const statusEl = document.getElementById('sim-status');
+                if (data.simConnected) {
+                    statusEl.innerText = "SIM_LINK_ACTIVE";
+                    statusEl.className = "text-[9px] font-black uppercase px-3 py-1 border border-[#00ff41] text-[#00ff41] italic animate-pulse";
+                } else {
+                    statusEl.innerText = "LINK_OFFLINE";
+                    statusEl.className = "text-[9px] font-black uppercase px-3 py-1 border border-red-500 text-red-500 italic";
+                }
+
+                if (data.telemetry) {
+                    const t = data.telemetry;
+                    document.getElementById('alt').innerText = Math.round(t.altitudeFt);
+                    document.getElementById('spd').innerText = Math.round(t.groundSpeedKts);
+                    document.getElementById('hdg').innerText = Math.round(t.headingDeg);
+                    document.getElementById('fuel').innerText = Math.round(t.fuelRemainingLbs);
+                    document.getElementById('lat').innerText = t.latitude.toFixed(4);
+                    document.getElementById('lon').innerText = t.longitude.toFixed(4);
+
+                    const pos = [t.latitude, t.longitude];
+                    marker.setLatLng(pos);
+                    path.addLatLng(pos);
+                    map.panTo(pos);
+                }
+            } catch (e) { console.error("Bridge Connection Lost"); }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const box = document.getElementById('chat-box');
+            box.innerHTML += `<div class="text-white/80"><span class="text-[#00ff41] font-bold">PILOT:</span> ${text.toUpperCase()}</div>`;
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+                if (data.response) {
+                    box.innerHTML += `<div class="mt-2"><span class="text-orange-500 font-bold">DISPATCH:</span> ${data.response}</div>`;
+                    box.scrollTop = box.scrollHeight;
+                }
+            } catch (e) {
+                box.innerHTML += `<div class="text-red-500 text-[8px]">ERR: UPLINK_TIMEOUT</div>`;
+            }
+        }
+
+        document.getElementById('send-btn').onclick = sendMessage;
+        document.getElementById('chat-input').onkeydown = (e) => e.key === 'Enter' && sendMessage();
+
+        setInterval(poll, 1000);
+    </script>
+</body>
+</html>

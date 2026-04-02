@@ -1,0 +1,26 @@
+{
+  "name": "HEMS Simulation Operations Center",
+  "short_name": "HEMS Ops",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f8f8",
+  "theme_color": "#e77a00",
+  "icons": [
+    {
+      "src": "/logo-main.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-main.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-main.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "apple touch icon"
+    }
+  ]
+}
