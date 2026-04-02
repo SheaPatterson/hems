@@ -1,0 +1,8 @@
+api/
+infra/
+plugins/
+electron/
+public/downloads/hems-dispatch/bridge/
+public/downloads/hems-dispatch/sim/
+public/downloads/hems-dispatch/supabase/
+*.md

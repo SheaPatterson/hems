@@ -3,6 +3,7 @@
   "buildCommand": "npx vite build",
   "outputDirectory": "dist",
   "installCommand": "npm install --legacy-peer-deps",
+  "functions": {},
   "rewrites": [
     {
       "source": "/(.*)",
