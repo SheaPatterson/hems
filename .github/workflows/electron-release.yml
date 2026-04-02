@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
       - run: npm run electron:build:win
       - uses: actions/upload-artifact@v4
         with:
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
       - run: npm run electron:build:mac
       - uses: actions/upload-artifact@v4
         with:
