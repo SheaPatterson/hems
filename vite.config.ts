@@ -56,6 +56,18 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       emptyOutDir: true,
+      chunkSizeWarningLimit: 2500,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs', '@radix-ui/react-tooltip'],
+            charts: ['recharts'],
+            maps: ['leaflet', 'react-leaflet'],
+            azure: ['@azure/msal-browser', '@azure/msal-react', '@microsoft/signalr'],
+          },
+        },
+      },
     }
   };
 
