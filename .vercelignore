@@ -1,8 +1,8 @@
 api/
 infra/
-plugins/
+plugins/xplane-native/
+plugins/msfs/
 electron/
 public/downloads/hems-dispatch/bridge/
 public/downloads/hems-dispatch/sim/
 public/downloads/hems-dispatch/supabase/
-*.md
